@@ -30,6 +30,7 @@ import com.plotsquared.core.permissions.Permission;
 import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.PlotArea;
+import com.plotsquared.core.plot.flag.implementations.DoneFlag;
 import com.plotsquared.core.util.EconHandler;
 import com.plotsquared.core.util.EventDispatcher;
 import com.plotsquared.core.util.PlotExpression;
@@ -230,8 +231,10 @@ public class Merge extends SubCommand {
             return true;
         }
         Plot adjacent = plot.getRelative(direction);
-        if (adjacent == null || !adjacent.hasOwner() || adjacent
-                .isMerged((direction.getIndex() + 2) % 4) || (!force && adjacent.isOwner(uuid))) {
+        if (adjacent == null || !adjacent.hasOwner() ||
+                DoneFlag.isDone(adjacent) ||
+                adjacent.isMerged((direction.getIndex() + 2) % 4) ||
+                (!force && adjacent.isOwner(uuid))) {
             player.sendMessage(TranslatableCaption.of("merge.no_available_automerge"));
             return false;
         }

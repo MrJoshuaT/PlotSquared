@@ -37,6 +37,7 @@ import com.plotsquared.core.location.Direction;
 import com.plotsquared.core.location.Location;
 import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.flag.PlotFlag;
+import com.plotsquared.core.plot.flag.implementations.DoneFlag;
 import com.plotsquared.core.queue.QueueCoordinator;
 import com.plotsquared.core.util.PlayerManager;
 import com.plotsquared.core.util.task.TaskManager;
@@ -585,7 +586,7 @@ public final class PlotModificationManager {
             Set<Plot> plots;
             if ((dir == Direction.ALL || dir == Direction.NORTH) && !current.isMerged(Direction.NORTH)) {
                 Plot other = current.getRelative(Direction.NORTH);
-                if (other != null && other.isOwner(uuid) && (other.getBasePlot(false).equals(current.getBasePlot(false))
+                if (other != null &&other.isOwner(uuid) && !DoneFlag.isDone(other) && (other.getBasePlot(false).equals(current.getBasePlot(false))
                         || (plots = other.getConnectedPlots()).size() <= max && frontier.addAll(plots) && (max -= plots.size()) != -1)) {
                     current.mergePlot(other, removeRoads, queue);
                     merged.add(current.getId());
