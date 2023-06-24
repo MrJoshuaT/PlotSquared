@@ -592,11 +592,11 @@ public class PlotAnalysis {
         if (this.complexity != 0) {
             return this.complexity;
         }
-        this.complexity = this.changes * modifiers.CHANGES + this.faces * modifiers.FACES
-                + this.data * modifiers.DATA + this.air * modifiers.AIR
-                + this.variety * modifiers.VARIETY + this.changes_sd * modifiers.CHANGES_SD
-                + this.faces_sd * modifiers.FACES_SD + this.data_sd * modifiers.DATA_SD
-                + this.air_sd * modifiers.AIR_SD + this.variety_sd * modifiers.VARIETY_SD;
+        this.complexity = (this.changes * modifiers.CHANGES) + (this.faces * modifiers.FACES)
+                + (this.data * modifiers.DATA) + (this.air * modifiers.AIR)
+                + (this.variety * modifiers.VARIETY) + (this.changes_sd * modifiers.CHANGES_SD)
+                + (this.faces_sd * modifiers.FACES_SD) + (this.data_sd * modifiers.DATA_SD)
+                + (this.air_sd * modifiers.AIR_SD) + (this.variety_sd * modifiers.VARIETY_SD);
         return this.complexity;
     }
 

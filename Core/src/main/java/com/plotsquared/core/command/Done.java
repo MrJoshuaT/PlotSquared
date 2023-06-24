@@ -25,6 +25,7 @@ import com.plotsquared.core.configuration.caption.TranslatableCaption;
 import com.plotsquared.core.events.PlotDoneEvent;
 import com.plotsquared.core.events.PlotFlagAddEvent;
 import com.plotsquared.core.events.Result;
+import com.plotsquared.core.generator.HybridPlotWorld;
 import com.plotsquared.core.generator.HybridUtils;
 import com.plotsquared.core.location.Location;
 import com.plotsquared.core.permissions.Permission;
@@ -35,9 +36,9 @@ import com.plotsquared.core.plot.flag.PlotFlag;
 import com.plotsquared.core.plot.flag.implementations.DoneFlag;
 import com.plotsquared.core.util.EventDispatcher;
 import com.plotsquared.core.util.task.RunnableVal;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.Template;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @CommandDeclaration(command = "done",
@@ -46,6 +47,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
         category = CommandCategory.SETTINGS,
         requiredType = RequiredType.NONE)
 public class Done extends SubCommand {
+    private static final Logger LOGGER = LogManager.getLogger("PlotSquared/" + Done.class.getSimpleName());
 
     private final EventDispatcher eventDispatcher;
     private final HybridUtils hybridUtils;
@@ -94,7 +96,7 @@ public class Done extends SubCommand {
                 TagResolver.resolver("plot", Tag.inserting(Component.text(plot.getId().toString())))
         );
         final Settings.Auto_Clear doneRequirements = Settings.AUTO_CLEAR.get("done");
-        if (PlotSquared.platform().expireManager() == null || doneRequirements == null) {
+        if (doneRequirements == null || player.hasPermission(Permission.PERMISSION_ADMIN_COMMAND_DONE)) {
             finish(plot, player, true);
             plot.removeRunning();
         } else {
@@ -102,9 +104,22 @@ public class Done extends SubCommand {
                 @Override
                 public void run(PlotAnalysis value) {
                     plot.removeRunning();
-                    boolean result =
-                            value.getComplexity(doneRequirements) >= doneRequirements.THRESHOLD;
-                    finish(plot, player, result);
+                    var complexity = value.getComplexity(doneRequirements);
+                    LOGGER.info("-----------");
+                    LOGGER.info("Complexity for plot " + plot.getId().toString() + " is " + complexity);
+                    LOGGER.info("Air: " + value.air + ", " + doneRequirements.CALIBRATION.AIR);
+                    LOGGER.info("Air_sd: " + value.air_sd + ", " + doneRequirements.CALIBRATION.AIR_SD);
+                    LOGGER.info("Changes: " + value.changes + ", " + doneRequirements.CALIBRATION.CHANGES);
+                    LOGGER.info("Changes_sd: " + value.changes_sd + ", " + doneRequirements.CALIBRATION.CHANGES_SD);
+                    LOGGER.info("Data: " + value.data + ", " + doneRequirements.CALIBRATION.DATA);
+                    LOGGER.info("Data_sd: " + value.data_sd + ", " + doneRequirements.CALIBRATION.DATA_SD);
+                    LOGGER.info("Faces: " + value.faces + ", " + doneRequirements.CALIBRATION.FACES);
+                    LOGGER.info("Faces_sd: " + value.faces_sd + ", " + doneRequirements.CALIBRATION.FACES_SD);
+                    LOGGER.info("Variety: " + value.variety + ", " + doneRequirements.CALIBRATION.VARIETY);
+                    LOGGER.info("Variety_sd: " + value.variety_sd + ", " + doneRequirements.CALIBRATION.VARIETY_SD);
+                    LOGGER.info("-----------");
+                    boolean success = complexity >= doneRequirements.THRESHOLD;
+                    finish(plot, player, success);
                 }
             });
         }
